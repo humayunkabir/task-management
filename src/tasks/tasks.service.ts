@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
 import { v1 as uuid } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -27,13 +27,13 @@ export class TasksService {
     },
   ];
 
-  allTasks(): Task[] {
+  getAllTasks(): Task[] {
     return this.tasks;
   }
 
-  filteredTasks(filterDto: GetTasksFilterDto): Task[] {
+  getFilteredTasks(filterDto: GetTasksFilterDto): Task[] {
     const { status, search } = filterDto;
-    let tasks = this.allTasks();
+    let tasks = this.getAllTasks();
 
     if (status) {
       tasks = tasks.filter(task => task.status === status);
@@ -47,11 +47,17 @@ export class TasksService {
     return tasks;
   }
 
-  single(id: string): Task | undefined {
-    return this.tasks.find(task => task.id === id);
+  getSingleTask(id: string): Task {
+    const foundTask = this.tasks.find(task => task.id === id);
+
+    if (!foundTask) {
+      throw new NotFoundException(`Requested Task doesn't exist`);
+    }
+
+    return foundTask;
   }
 
-  create(createTaskDto: CreateTaskDto): Task {
+  createTask(createTaskDto: CreateTaskDto): Task {
     const { title, description } = createTaskDto;
     const task: Task = {
       id: uuid(),
@@ -64,12 +70,13 @@ export class TasksService {
     return task;
   }
 
-  delete(id: string): void {
-    this.tasks = this.tasks.filter(task => task.id !== id);
+  deleteTask(id: string): void {
+    const foundTask = this.getSingleTask(id);
+    this.tasks = this.tasks.filter(task => task.id !== foundTask.id);
   }
 
-  updateStatus(id: string, status: TaskStatus): Task {
-    const task = this.single(id);
+  updateTaskStatus(id: string, status: TaskStatus): Task {
+    const task = this.getSingleTask(id);
     const updatedTask = { ...task, status };
 
     this.tasks = this.tasks.map(task => (task.id === id ? updatedTask : task));
