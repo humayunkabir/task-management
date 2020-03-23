@@ -1,7 +1,7 @@
 {
   "name": "task-management",
   "version": "0.0.1",
-  "description": "",
+  "description": "NestJS Zero to Hero - Modern TypeScript Back-end Development. Develop and deploy enterprise back-end applications following best practices using Node.js and TypeScript",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
