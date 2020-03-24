@@ -5,7 +5,7 @@ import { TaskStatus } from './task-status.enum';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { User } from '../auth/user.entity';
 import { Logger, InternalServerErrorException } from '@nestjs/common';
-import { stringify } from 'src/helpers/utils';
+import { stringify } from '../helpers/utils';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
