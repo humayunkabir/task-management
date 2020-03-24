@@ -1,12 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
+import { stringify } from 'src/helpers/utils';
 
 @Injectable()
 export class AuthService {
+  private looger = new Logger('AuthService');
+
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
@@ -29,7 +32,11 @@ export class AuthService {
 
     //Can add roles, email and so on here, but not any sensetive information
     const payload: JwtPayload = { username };
+    const accessToken = await this.jwtService.sign(payload);
+    this.looger.debug(
+      `Generated JWT Token with payload: ${stringify(payload)}`,
+    );
 
-    return { accessToken: await this.jwtService.sign(payload) };
+    return { accessToken };
   }
 }
